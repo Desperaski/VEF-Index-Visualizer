@@ -1,0 +1,16 @@
+schema_version = "1.0.0"
+
+id = "vef_index_visualizer"
+version = "1.0.0"
+name = "VEF Index Visualizer"
+tagline = "Display vertex, edge and face indices in 3D viewport"
+maintainer = "Desperaski"
+type = "add-on"
+
+tags = ["Modeling", "Development", "3D View"]
+
+blender_version_min = "4.2.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
