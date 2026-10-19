@@ -7,7 +7,7 @@ from bpy_extras import view3d_utils
 
 
 def _is_point_visible(world_co, depsgraph):
-    """True если точка не перекрыта геометрией (ray_cast из камеры в точку)."""
+    """True if the point is not occluded by geometry (ray_cast from camera)."""
     ctx = bpy.context
     region = ctx.region
     rv3d = ctx.space_data.region_3d
@@ -66,8 +66,7 @@ class VEFProperties(PropertyGroup):
     use_occlusion: BoolProperty(
         name="Occlusion (Hide Behind Geometry)",
         default=True,
-        description="Hide indices that are behind geometry. "
-                    "Independent from Blender's X-Ray toggle"
+        description="Hide indices that are behind geometry. Independent from Blender's X-Ray toggle"
     )
     enable_limit: BoolProperty(
         name="Limit Display Count",
@@ -146,12 +145,12 @@ def draw_indices_callback(*args):
 
     depsgraph = ctx.evaluated_depsgraph_get() if use_occlusion else None
 
-    # Кэш видимости вершин: {vert_index: bool}
-    # Заполняется лениво — только когда нужен (вершины/рёбра/грани).
+    # Cache vertex visibility: {vert_index: bool}
+    # Filled lazily - only when needed (vertices/edges/faces).
     visible_verts = {}
 
     def vert_visible(v_index, world_co):
-        """Видимость вершины с кэшем. world_co передаётся, чтобы не считать дважды."""
+        """Vertex visibility with cache. world_co passed to avoid double calculation."""
         if not use_occlusion:
             return True
         cached = visible_verts.get(v_index)
@@ -162,7 +161,7 @@ def draw_indices_callback(*args):
         return result
 
     def any_vert_visible(vert_indices_world):
-        """True если видима хотя бы одна вершина из списка [(idx, world_co), ...]."""
+        """True if at least one vertex from the list is visible."""
         if not use_occlusion:
             return True
         for vi, wc in vert_indices_world:
@@ -213,7 +212,7 @@ def draw_indices_callback(*args):
                     count += 1
 
         # --- Edges ---
-        # Видимо, если видима хотя бы одна из двух вершин.
+        # Visible if at least one of the two vertices is visible.
         if props.show_edges and bm:
             blf.color(font_id, *props.color_edges)
             count = 0
@@ -238,7 +237,7 @@ def draw_indices_callback(*args):
                 count += 1
 
         # --- Faces ---
-        # Видимо, если видима хотя бы одна из его вершин.
+        # Visible if at least one of its vertices is visible.
         if props.show_faces and bm:
             blf.color(font_id, *props.color_faces)
             count = 0
@@ -293,10 +292,8 @@ class VEF_PT_main_panel(Panel):
 
         row = layout.row(align=True)
         if props.is_enabled:
-            # Индексы видны -> глаз открытый, надпись "Enabled"
             row.operator("vef.toggle_display", text="Enabled", icon='HIDE_OFF')
         else:
-            # Индексы скрыты -> глаз закрытый, надпись "Disabled"
             row.operator("vef.toggle_display", text="Disabled", icon='HIDE_ON')
 
         layout.separator()
@@ -349,8 +346,8 @@ def register():
 
     bpy.types.Scene.vef_props = PointerProperty(type=VEFProperties)
 
-    # POST_PIXEL: blf стабильно работает в этом контексте.
-    # Окклюзия — вручную через ray_cast (см. _is_point_visible).
+    # POST_PIXEL: blf is stable in this context.
+    # Occlusion is handled manually via ray_cast (see _is_point_visible).
     draw_handle = bpy.types.SpaceView3D.draw_handler_add(
         draw_indices_callback, (), 'WINDOW', 'POST_PIXEL'
     )

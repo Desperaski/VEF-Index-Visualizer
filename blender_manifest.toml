@@ -1,7 +1,7 @@
-schema_version = "1.0.0"
+schema_version = "1.1.0"
 
 id = "vef_index_visualizer"
-version = "1.0.0"
+version = "1.1.1"
 name = "VEF Index Visualizer"
 tagline = "Display vertex, edge and face indices in 3D viewport"
 maintainer = "Desperaski"
